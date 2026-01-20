@@ -4,9 +4,7 @@ import Layout from './components/Layout'; // <--- Importamos el Layout
 import Clientes from "./pages/Clientes";
 import Empleados from './pages/Empleados';
 import Servicios from './pages/Servicios';
-
-// Crea componentes vacíos temporales para que no falle el menú al hacer clic
-const Agenda = () => <h1 className="text-2xl font-bold">Próximamente: Agenda</h1>;
+import Agenda from './pages/Agenda';
 
 
 function App() {
