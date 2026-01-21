@@ -9,10 +9,14 @@ import {
     isSameDay, parseISO 
 } from 'date-fns';
 import { es } from 'date-fns/locale'; // Para fechas en español
+import ModalNuevaCita from '../components/ModalNuevaCita';
 
 export default function Agenda() {
     const [citas, setCitas] = useState([]);
     const [cargando, setCargando] = useState(false);
+
+    // 2. NUEVO ESTADO PARA EL MODAL
+    const [modalAbierto, setModalAbierto] = useState(false);
     
     // Estados de control
     const [vista, setVista] = useState('dia'); // 'dia', 'semana', 'mes'
@@ -121,6 +125,12 @@ export default function Agenda() {
                         className="border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
+                <button 
+                    onClick={() => setModalAbierto(true)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
+                >
+                    <span>+</span> Nueva Cita
+                </button>
             </div>
 
             {/* --- ÁREA DE CONTENIDO (LISTA DE CITAS TEMPORAL) --- */}
@@ -154,6 +164,10 @@ export default function Agenda() {
                     </div>
                 )}
             </div>
+            <ModalNuevaCita 
+                isOpen={modalAbierto} 
+                onClose={() => setModalAbierto(false)} 
+            />
         </div>
     );
 }
