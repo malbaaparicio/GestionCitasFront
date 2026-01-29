@@ -6,52 +6,48 @@ import {
     startOfMonth, endOfMonth, 
     addDays, addWeeks, addMonths, 
     subDays, subWeeks, subMonths,
-    isSameDay, parseISO 
+    parseISO 
 } from 'date-fns';
-import { es } from 'date-fns/locale'; // Para fechas en español
+import { es } from 'date-fns/locale'; 
 import ModalNuevaCita from '../components/ModalNuevaCita';
 
 export default function Agenda() {
     const [citas, setCitas] = useState([]);
     const [cargando, setCargando] = useState(false);
-
-    // 2. NUEVO ESTADO PARA EL MODAL
-    const [modalAbierto, setModalAbierto] = useState(false);
     
-    // Estados de control
-    const [vista, setVista] = useState('dia'); // 'dia', 'semana', 'mes'
+    // --- ESTADOS DE CONTROL ---
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [citaEditar, setCitaEditar] = useState(null); // Para saber qué cita editamos
+    const [refreshKey, setRefreshKey] = useState(0);    // Contador para forzar recarga
+    
+    const [vista, setVista] = useState('dia'); 
     const [fechaActual, setFechaActual] = useState(new Date());
 
     // 1. CÁLCULO DE FECHAS
     const obtenerRangoFechas = () => {
         let desde, hasta;
-
         if (vista === 'dia') {
             desde = fechaActual;
             hasta = fechaActual;
         } else if (vista === 'semana') {
-            // weekStartsOn: 1 significa que la semana empieza en Lunes
             desde = startOfWeek(fechaActual, { weekStartsOn: 1 }); 
             hasta = endOfWeek(fechaActual, { weekStartsOn: 1 });
-        } else { // vista === 'mes'
+        } else { 
             desde = startOfMonth(fechaActual);
             hasta = endOfMonth(fechaActual);
         }
-
         return {
             fecha_desde: format(desde, 'yyyy-MM-dd'),
             fecha_hasta: format(hasta, 'yyyy-MM-dd')
         };
     };
 
-    // 2. LLAMADA A LA API
+    // 2. CARGA DE CITAS
     useEffect(() => {
         const fetchCitas = async () => {
             setCargando(true);
             try {
                 const rango = obtenerRangoFechas();
-                
-                // Axios convierte automáticamente el objeto 'params' en ?fecha_desde=X&fecha_hasta=Y
                 const response = await api.get('/citas', { params: rango });
                 setCitas(response.data);
             } catch (error) {
@@ -62,9 +58,10 @@ export default function Agenda() {
         };
 
         fetchCitas();
-    }, [fechaActual, vista]); // Se recarga si cambias de día o de vista
+    // AÑADIDO 'refreshKey' AQUÍ ABAJO: Cada vez que cambie, se recarga la lista
+    }, [fechaActual, vista, refreshKey]); 
 
-    // 3. MANEJADORES DE NAVEGACIÓN
+    // --- MANEJADORES DE NAVEGACIÓN ---
     const navegar = (direccion) => {
         if (direccion === 'prev') {
             if (vista === 'dia') setFechaActual(subDays(fechaActual, 1));
@@ -77,22 +74,29 @@ export default function Agenda() {
         }
     };
 
-    // Función para pintar etiqueta de rango (Ej: "Enero 2026")
     const renderEtiquetaFecha = () => {
         if (vista === 'dia') return format(fechaActual, "EEEE d 'de' MMMM", { locale: es });
         if (vista === 'mes') return format(fechaActual, "MMMM yyyy", { locale: es });
-        
         const inicio = startOfWeek(fechaActual, { weekStartsOn: 1 });
         const fin = endOfWeek(fechaActual, { weekStartsOn: 1 });
         return `${format(inicio, 'd MMM', { locale: es })} - ${format(fin, 'd MMM', { locale: es })}`;
     };
 
+    // --- MANEJADORES DEL MODAL ---
+    const abrirModalCrear = () => {
+        setCitaEditar(null); // Limpiamos para que sea una cita nueva
+        setModalAbierto(true);
+    };
+
+    const abrirModalEditar = (cita) => {
+        setCitaEditar(cita); // Pasamos los datos de la cita clicada
+        setModalAbierto(true);
+    };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            {/* --- BARRA SUPERIOR DE HERRAMIENTAS --- */}
+            {/* BARRA SUPERIOR */}
             <div className="flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-lg shadow mb-6 gap-4">
-                
-                {/* Botones de Vista */}
                 <div className="flex bg-gray-200 rounded p-1">
                     {['dia', 'semana', 'mes'].map((v) => (
                         <button
@@ -107,7 +111,6 @@ export default function Agenda() {
                     ))}
                 </div>
 
-                {/* Navegación Central */}
                 <div className="flex items-center gap-4">
                     <button onClick={() => navegar('prev')} className="p-2 hover:bg-gray-100 rounded-full">◀</button>
                     <span className="text-lg font-semibold capitalize min-w-[200px] text-center">
@@ -116,24 +119,16 @@ export default function Agenda() {
                     <button onClick={() => navegar('next')} className="p-2 hover:bg-gray-100 rounded-full">▶</button>
                 </div>
 
-                {/* Selector Manual */}
-                <div>
-                    <input 
-                        type="date" 
-                        value={format(fechaActual, 'yyyy-MM-dd')}
-                        onChange={(e) => setFechaActual(parseISO(e.target.value))} // parseISO es más seguro
-                        className="border rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
+                {/* BOTÓN NUEVA CITA */}
                 <button 
-                    onClick={() => setModalAbierto(true)}
+                    onClick={abrirModalCrear} // Usamos la función nueva
                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
                 >
                     <span>+</span> Nueva Cita
                 </button>
             </div>
 
-            {/* --- ÁREA DE CONTENIDO (LISTA DE CITAS TEMPORAL) --- */}
+            {/* LISTA DE CITAS */}
             <div className="bg-white rounded-lg shadow p-6">
                 {cargando ? (
                     <div className="text-center py-10 text-gray-500">Cargando agenda...</div>
@@ -141,12 +136,17 @@ export default function Agenda() {
                     <div className="text-center py-10 text-gray-400">No hay citas para este periodo.</div>
                 ) : (
                     <div className="space-y-4">
-                        {/* Aquí pintamos una lista simple por ahora. Luego haremos un calendario visual */}
                         {citas.map((cita) => (
-                            <div key={cita.citaId} className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded flex justify-between items-center">
+                            <div 
+                                key={cita.citaid} 
+                                onClick={() => abrirModalEditar(cita)} // Al hacer clic, editamos
+                                className="cursor-pointer border-l-4 border-blue-500 bg-blue-50 p-4 rounded flex justify-between items-center hover:shadow-md transition"
+                            >
                                 <div>
                                     <div className="font-bold text-blue-900">
-                                        {format(parseISO(cita.fecha_hora_inicio), 'HH:mm')} - {format(parseISO(cita.fecha_hora_fin), 'HH:mm')}
+                                        {/* Protegemos con ? por si viene nulo */}
+                                        {cita.fecha_hora_inicio && format(parseISO(cita.fecha_hora_inicio), 'HH:mm')} - 
+                                        {cita.fecha_hora_fin && format(parseISO(cita.fecha_hora_fin), 'HH:mm')}
                                     </div>
                                     <div className="text-gray-700 font-medium">{cita.nombreCliente}</div>
                                     <div className="text-sm text-gray-500">con {cita.nombreEmpleado}</div>
@@ -164,9 +164,14 @@ export default function Agenda() {
                     </div>
                 )}
             </div>
+
+            {/* MODAL CONFIGURADO CORRECTAMENTE */}
             <ModalNuevaCita 
                 isOpen={modalAbierto} 
                 onClose={() => setModalAbierto(false)} 
+                // Al guardar, sumamos 1 al refreshKey, lo que dispara el useEffect de arriba
+                onCitaGuardada={() => setRefreshKey(prev => prev + 1)}
+                citaAEditar={citaEditar} // Pasamos la cita a editar (o null si es nueva)
             />
         </div>
     );
