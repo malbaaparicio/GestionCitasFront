@@ -135,8 +135,14 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaCreada, citaAEdi
                             value={formData.clienteid}
                             onChange={(e) => setFormData({...formData, clienteid: e.target.value})}
                         >
-                            <option value="">Seleccione Cliente...</option>
-                            {clientes.map(c => <option key={c.clienteId} value={c.clienteId}>{c.nombre} {c.apellidos}</option>)}
+                            <option value="" disabled>Seleccione Cliente...</option>
+                            {clientes.map(c => 
+                                <option 
+                                    key={c.clienteId} 
+                                    value={c.clienteId}>{c.nombre} {c.apellidos}                                   
+                                    
+                                </option>)}
+                        
                         </select>
                     </div>
 
