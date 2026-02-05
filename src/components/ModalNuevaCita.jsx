@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
 
-export default function ModalNuevaCita({ isOpen, onClose, onCitaCreada, citaAEditar }) {
+export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAEditar }) {
     // 1. Estados para los desplegables
     const [clientes, setClientes] = useState([]);
     const [empleados, setEmpleados] = useState([]);
@@ -76,7 +76,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaCreada, citaAEdi
     };
    // GUARDAR (CREAR O EDITAR)
     const handleGuardar = async () => {
-        if (!formData.clienteId || !formData.empleadoId || !formData.fecha_hora_inicio) {
+        if (!formData.clienteid || !formData.empleadoid || !formData.fecha_hora_inicio) {
             alert("Rellena los campos obligatorios");
             return;
         }
@@ -92,7 +92,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaCreada, citaAEdi
                 alert("Cita creada correctamente");
             }
             
-            onCitaCreada(); // Refrescar Agenda
+            onCitaGuardada(); // Refrescar Agenda
             onClose();
 
         } catch (error) {
@@ -108,7 +108,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaCreada, citaAEdi
         try {
             await api.delete(`/citas/${citaAEditar.citaid}`);
             alert("Cita eliminada");
-            onCitaCreada();
+            onCitaGuardada();
             onClose();
         } catch (error) {
             console.error("Error al borrar:", error);

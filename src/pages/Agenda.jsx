@@ -143,6 +143,10 @@ export default function Agenda() {
                                 className="cursor-pointer border-l-4 border-blue-500 bg-blue-50 p-4 rounded flex justify-between items-center hover:shadow-md transition"
                             >
                                 <div>
+                                    {/*Mostramos la fecha de la cita sin hora, solo el día y mes*/}
+                                    <div className="text-sm text-gray-500">
+                                        {format(parseISO(cita.fecha_hora_inicio), 'd MMMM', { locale: es })}
+                                    </div>
                                     <div className="font-bold text-blue-900">
                                         {/* Protegemos con ? por si viene nulo */}
                                         {cita.fecha_hora_inicio && format(parseISO(cita.fecha_hora_inicio), 'HH:mm')} - 
