@@ -140,8 +140,13 @@ export default function Agenda() {
                             <div 
                                 key={cita.citaid} 
                                 onClick={() => abrirModalEditar(cita)} // Al hacer clic, editamos
-                                className="cursor-pointer border-l-4 border-blue-500 bg-blue-50 p-4 rounded flex justify-between items-center hover:shadow-md transition"
-                            >
+                                className="cursor-pointer border-l-8 p-4 rounded shadow-sm flex justify-between items-center hover:shadow-md transition bg-white mb-3"
+                                style={{ 
+                                    borderLeftColor: cita.color_agenda_empleado || '#ccc',
+                                    backgroundColor: cita.color_agenda_empleado ? `${cita.color_agenda_empleado}15` : '#ffffff' 
+                                    // El '15' al final del hex añade un 15% de opacidad (truco hex)
+                                }}
+                            >           
                                 <div>
                                     {/*Mostramos la fecha de la cita sin hora, solo el día y mes*/}
                                     <div className="text-sm text-gray-500">

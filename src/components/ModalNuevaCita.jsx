@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
+import Swal from 'sweetalert2';
 
 export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAEditar }) {
     // 1. Estados para los desplegables
@@ -77,7 +78,11 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
    // GUARDAR (CREAR O EDITAR)
     const handleGuardar = async () => {
         if (!formData.clienteid || !formData.empleadoid || !formData.fecha_hora_inicio) {
-            alert("Rellena los campos obligatorios");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Faltan datos',
+                text: 'Por favor, rellena Cliente, Empleado y Fecha.'
+            });
             return;
         }
 
@@ -85,19 +90,53 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
             if (citaAEditar) {
                 // --- PUT (EDITAR) ---
                 await api.put(`/citas/${citaAEditar.citaid}`, formData);
-                alert("Cita actualizada correctamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualizado',
+                    text: 'La cita se ha modificado correctamente',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } else {
                 // --- POST (CREAR) ---
                 await api.post('/citas', formData);
-                alert("Cita creada correctamente");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Creada',
+                    text: 'Cita agendada correctamente',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
             
             onCitaGuardada(); // Refrescar Agenda
             onClose();
 
         } catch (error) {
-            console.error("Error al guardar:", error);
-            alert("Error al guardar la cita.");
+           console.error("Error al guardar:", error);
+
+            // 🧠 AQUÍ ESTÁ LA MAGIA PARA LEER EL MENSAJE DEL BACKEND
+            // 1. Si el backend manda un string simple (Conflict), está en error.response.data
+            // 2. Si manda un objeto de validación (BadRequest), a veces está en title o errors
+            let mensajeError = "Ocurrió un error inesperado.";
+
+            if (error.response) {
+                if (typeof error.response.data === 'string') {
+                    // Caso del Solapamiento (Conflict)
+                    mensajeError = error.response.data; 
+                } else if (error.response.data?.title) {
+                    // Caso de Validación .NET automática
+                    mensajeError = error.response.data.title;
+                }
+            }
+
+            // Mostramos el error bonito
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudo guardar',
+                text: mensajeError,
+                confirmButtonColor: '#d33'
+            });
         }
     };
 
