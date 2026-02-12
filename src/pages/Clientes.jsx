@@ -26,7 +26,7 @@ export default function Clientes() {
         };
 
         fetchClientes();
-    }, []);
+    }, [refreshKey]);
 
      // --- MANEJADORES DEL MODAL ---
     const abrirModalCrear = () => {

@@ -7,10 +7,10 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
 
     // 2. Estado para los datos del formulario (coincidiendo con tu ClienteCreateDTO)
     const [formData, setFormData] = useState({
-        Nombre: '',
-        Apellidos: '',
-        Email: '',
-        Telefono: '',
+        nombre: '',
+        apellidos: '',
+        email: '',
+        telefono: '',
         notas_internas: ''
     });
 
@@ -19,20 +19,20 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
         if (clienteAEditar) {
             // MODO EDICIÓN: Rellenamos con los datos del cliente a editar
             setFormData({
-                Nombre: clienteAEditar.Nombre || '',
-                Apellidos: clienteAEditar.Apellidos || '',
-                Email: clienteAEditar.Email || '',
-                Telefono: clienteAEditar.Telefono || '',
+                nombre: clienteAEditar.nombre || '',
+                apellidos: clienteAEditar.apellidos || '',
+                email: clienteAEditar.email || '',
+                telefono: clienteAEditar.telefono || '',
                 notas_internas: clienteAEditar.notas_internas || ''
               
             });
         } else {
             // MODO CREACIÓN: Limpiamos
             setFormData({
-                Nombre: '',
-                Apellidos: '',
-                Email: '',
-                Telefono: '',
+                nombre: '',
+                apellidos: '',
+                email: '',
+                telefono: '',
                 notas_internas: ''
             });
         }
@@ -41,7 +41,7 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
   
    // GUARDAR (CREAR O EDITAR)
     const handleGuardar = async () => {
-        if (!formData.Nombre || !formData.Apellidos || !formData.Telefono) {
+        if (!formData.nombre || !formData.apellidos || !formData.telefono) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Faltan datos',
@@ -106,16 +106,40 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
 
     // BORRAR
     const handleBorrar = async () => {
-        if (!window.confirm("¿Seguro que quieres eliminar este cliente?")) return;
+       // 1. Preguntar con estilo (SweetAlert)
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: `Se eliminará a ${formData.nombre} ${formData.apellidos} y su historial.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33', // Rojo para peligro
+            cancelButtonColor: '#3085d6', // Azul para cancelar
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if(result.isConfirmed) {
 
         try {
             await api.delete(`/clientes/${clienteAEditar.clienteid}`);
-            alert("Cliente eliminado");
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El cliente ha sido eliminado',
+                timer: 1500,
+                showConfirmButton: false
+            });
             onGuardado();
             onClose();
-        } catch (error) {
-            console.error("Error al borrar:", error);
-            alert("No se pudo eliminar el cliente");
+            } catch (error) {
+                console.error("Error al borrar:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo eliminar el cliente',
+                    confirmButtonColor: '#d33'
+                });
+            }
         }
     };
   
@@ -136,8 +160,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                         <input 
                             type="text" 
                             className="border rounded p-2" 
-                            value={formData.Nombre}
-                            onChange={(e) => setFormData({...formData, Nombre: e.target.value})}
+                            value={formData.nombre}
+                            onChange={(e) => setFormData({...formData, nombre: e.target.value})}
                         />
                     </div>
                     {/* APELLIDOS */}
@@ -146,8 +170,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                         <input
                             type="text" 
                             className="border rounded p-2" 
-                            value={formData.Apellidos}
-                            onChange={(e) => setFormData({...formData, Apellidos: e.target.value})}
+                            value={formData.apellidos}
+                            onChange={(e) => setFormData({...formData, apellidos: e.target.value})}
                         />
                     </div>
                     {/* EMAIL */}
@@ -156,8 +180,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                         <input 
                             type="email" 
                             className="border rounded p-2" 
-                            value={formData.Email}
-                            onChange={(e) => setFormData({...formData, Email: e.target.value})}
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
                         />
                     </div>
                     {/* TELÉFONO */}
@@ -166,8 +190,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                         <input 
                             type="text" 
                             className="border rounded p-2" 
-                            value={formData.Telefono}
-                            onChange={(e) => setFormData({...formData, Telefono: e.target.value})}
+                            value={formData.telefono}
+                            onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                         />
                     </div>
                         {/* NOTAS INTERNAS */}

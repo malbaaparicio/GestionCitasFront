@@ -177,8 +177,8 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                             <option value="" disabled>Seleccione Cliente...</option>
                             {clientes.map(c => 
                                 <option 
-                                    key={c.clienteId} 
-                                    value={c.clienteId}>{c.nombre} {c.apellidos}                                   
+                                    key={c.clienteid} 
+                                    value={c.clienteid}>{c.nombre} {c.apellidos}                                   
                                     
                                 </option>)}
                         
