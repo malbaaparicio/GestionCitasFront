@@ -71,8 +71,10 @@ export default function Clientes() {
                     <tbody>
                         {clientes.map((cliente) => (
                             <tr key={cliente.clienteid} 
-                                onClick={() => abrirModalEditar(cliente)}                            
-                                className="hover:bg-gray-50">
+                                onClick={() => abrirModalEditar(cliente)}                                                                
+                                className="cursor-pointer hover:bg-gray-50"                                                          
+                                
+                            >
                                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                     <p className="text-gray-900 whitespace-no-wrap">
                                         {cliente.nombre} {cliente.apellidos}
