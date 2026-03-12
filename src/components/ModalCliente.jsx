@@ -208,7 +208,7 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
 
                {/* BOTONERA */}
                 <div className="flex justify-between mt-6">
-                    {/* Botón Borrar (Solo visible al editar) */}
+                    {/* Botón Borrar (Solo visible al editar) 
                     <div>
                         {clienteAEditar && (
                             <button 
@@ -218,7 +218,7 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                                 🗑️ Eliminar
                             </button>
                         )}
-                    </div>
+                    </div>*/}
                     
                     <div className="flex gap-3">
                         <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>

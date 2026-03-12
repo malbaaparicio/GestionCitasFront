@@ -9,7 +9,8 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
             nombre: '',
             apellidos: '',           
             telefono: '',
-            color_agenda: ''
+            color_agenda: '',
+            estado: ''
         });
 
         // 4. EFECTO CLAVE: Rellenar formulario si venimos a EDITAR
@@ -20,7 +21,8 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                         nombre: empleadoAEditar.nombre || '',
                         apellidos: empleadoAEditar.apellidos || '',                       
                         telefono: empleadoAEditar.telefono || '',
-                        color_agenda: empleadoAEditar.color_agenda || ''
+                        color_agenda: empleadoAEditar.color_agenda || '',
+                        estado: empleadoAEditar.estado || ''
                     });
                 } else {
                     // MODO CREACIÓN: Limpiamos
@@ -28,7 +30,8 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                         nombre: '',
                         apellidos: '',                       
                         telefono: '',
-                        color_agenda: ''
+                        color_agenda: '',
+                        estado: ''
                     });
                 }
             }, [empleadoAEditar, isOpen]);
@@ -178,6 +181,19 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                             onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                         />
                     </div>
+                    {/* ESTADO */}
+                    <div className="flex flex-col">
+                        <label className="text-sm font-semibold mb-1">Estado</label>
+                        <select
+                            className="border rounded p-2"
+                            value={formData.estado}
+                            onChange={(e) => setFormData({...formData, estado: e.target.value})}
+                        >
+                            <option value="">Selecciona un estado</option>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
                         {/* COLOR AGENDA */}
                     <div className="flex flex-col md:col-span-2">
                         <label className="text-sm font-semibold mb-1">Color Agenda</label>
@@ -193,7 +209,7 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
 
                {/* BOTONERA */}
                 <div className="flex justify-between mt-6">
-                    {/* Botón Borrar (Solo visible al editar) */}
+                    {/* Botón Borrar (Solo visible al editar) 
                     <div>
                         {empleadoAEditar && (
                             <button 
@@ -203,7 +219,7 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                                 🗑️ Eliminar
                             </button>
                         )}
-                    </div>
+                    </div>*/}
                     
                     <div className="flex gap-3">
                         <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>
