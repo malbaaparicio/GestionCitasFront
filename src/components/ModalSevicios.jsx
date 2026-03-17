@@ -177,7 +177,8 @@ export default function ModalServicios ({isOpen, onClose, onGuardado, servicioAE
                             onChange={(e) => setFormData({...formData, precio_actual: e.target.value})}
                         />
                     </div>  
-                    {/* ESTADO */}
+                    {/* ESTADO solo si servicioAEditar */}
+                    {servicioAEditar && (
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Estado</label>
                         <select
@@ -189,7 +190,8 @@ export default function ModalServicios ({isOpen, onClose, onGuardado, servicioAE
                             <option value="Activo">Activo</option>
                             <option value="Inactivo">Inactivo</option>
                         </select>
-                    </div>                                           
+                    </div>    
+                    )}                                       
                 </div>
 
                {/* BOTONERA */}

@@ -156,7 +156,7 @@ export default function Empleados() {
                 {!cargando && empleadosFiltrados.length > 0 && (
                     <div className="px-5 py-4 flex items-center justify-between border-t border-gray-200 bg-white">
                         <span className="text-sm text-gray-600">
-                            Mostrando {indicePrimerRegistro + 1} a {Math.min(indiceUltimoRegistro, empleadosFiltrados.length)} de {empleadosFiltrados.length} Entradas
+                            Mostrando {indicePrimerRegistro + 1} a {Math.min(indiceUltimoRegistro, empleadosFiltrados.length)} de un total de {empleadosFiltrados.length} Empleados
                         </span>
                         <div className="inline-flex mt-2 xs:mt-0 gap-2">
                             <button 

@@ -181,7 +181,8 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                             onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                         />
                     </div>
-                    {/* ESTADO */}
+                    {/* ESTADO solo si empleadoAEditar */}
+                     {empleadoAEditar && (
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Estado</label>
                         <select
@@ -194,6 +195,7 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
                             <option value="Inactivo">Inactivo</option>
                         </select>
                     </div>
+                     )}
                         {/* COLOR AGENDA */}
                     <div className="flex flex-col md:col-span-2">
                         <label className="text-sm font-semibold mb-1">Color Agenda</label>

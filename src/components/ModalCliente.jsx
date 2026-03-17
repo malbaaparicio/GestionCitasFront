@@ -11,7 +11,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
         apellidos: '',
         email: '',
         telefono: '',
-        notas_internas: ''
+        notas_internas: '',
+        estado: ''
     });
 
     // 4. EFECTO CLAVE: Rellenar formulario si venimos a EDITAR
@@ -23,7 +24,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                 apellidos: clienteAEditar.apellidos || '',
                 email: clienteAEditar.email || '',
                 telefono: clienteAEditar.telefono || '',
-                notas_internas: clienteAEditar.notas_internas || ''
+                notas_internas: clienteAEditar.notas_internas || '',
+                estado: clienteAEditar.estado || ''
               
             });
         } else {
@@ -33,7 +35,8 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                 apellidos: '',
                 email: '',
                 telefono: '',
-                notas_internas: ''
+                notas_internas: '',
+                estado: ''
             });
         }
     }, [clienteAEditar, isOpen]);
@@ -194,7 +197,7 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                             onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                         />
                     </div>
-                        {/* NOTAS INTERNAS */}
+                    {/* NOTAS INTERNAS */}
                     <div className="flex flex-col md:col-span-2">
                         <label className="text-sm font-semibold mb-1">Notas Internas</label>
                         <textarea 
@@ -204,6 +207,20 @@ export default function ModalCliente({ isOpen, onClose, onGuardado, clienteAEdit
                             onChange={(e) => setFormData({...formData, notas_internas: e.target.value})}
                         ></textarea>
                     </div>
+                    {/* ESTADO solo si clienteEditar*/}
+                    {clienteAEditar && (
+                    <div className="flex flex-col">
+                        <label className="text-sm font-semibold mb-1">Estado</label>
+                        <select
+                            className="border rounded p-2"
+                            value={formData.estado}
+                            onChange={(e) => setFormData({...formData, estado: e.target.value})}
+                        >
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                    )}
                 </div>
 
                {/* BOTONERA */}
