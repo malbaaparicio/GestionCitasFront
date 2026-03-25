@@ -23,6 +23,9 @@ export default function Layout() {
           <Link to="/servicios" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
             🏷️ Servicios
           </Link>
+          <Link to="/calendarioGrid" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
+            📅 Calendario
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-slate-700">

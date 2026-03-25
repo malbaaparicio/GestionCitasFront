@@ -5,6 +5,7 @@ import Clientes from "./pages/Clientes";
 import Empleados from './pages/Empleados';
 import Servicios from './pages/Servicios';
 import Agenda from './pages/Agenda';
+import CalendarioGrid from './components/CalendarioGrid';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="agenda" element={<Agenda />} />
           <Route path="empleados" element={<Empleados />} />
           <Route path="servicios" element={<Servicios />} />
+          <Route path="calendarioGrid" element={<CalendarioGrid />} />
 
           {/* 404 dentro del layout */}
           <Route path="*" element={<div>Página no encontrada</div>} />
