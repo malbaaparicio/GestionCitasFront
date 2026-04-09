@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'moment/locale/es';
+import moment from 'moment/min/moment-with-locales'; 
+moment.locale('es', {
+  week: { dow: 1 } // Lunes como primer día
+});
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import api from '../api/axiosConfig'; // Importamos tu API
 
@@ -38,7 +40,8 @@ export default function CalendarioGrid() {
                     start: new Date(cita.fecha_hora_inicio), // IMPRESCINDIBLE: Convertir string a Objeto Date
                     end: new Date(cita.fecha_hora_fin),
                     resourceId: cita.empleadoid, // ⬅️ LA CLAVE MÁGICA: Esto le dice en qué columna pintarlo
-                    color: cita.color_agenda_empleado // Lo guardamos para pintar luego
+                    color: cita.color_agenda_empleado, // Lo guardamos para pintar luego
+                    citaOriginal: cita // Guardamos la cita original por si queremos usar más datos en el futuro
                 }));
                 setEventos(eventosMapeados);
 
@@ -52,6 +55,57 @@ export default function CalendarioGrid() {
         cargarDatos();
     }, []);
 
+    // Función para inyectar el color del empleado a la cita
+    const estiloEventos = (event, start, end, isSelected) => {
+        return {
+            style: {
+                backgroundColor: event.color || '#3174ad', // El color que mapeamos de la BD
+                borderColor: event.color || '#3174ad',
+                color: 'white', // Texto blanco para que contraste
+                borderRadius: '5px',
+                display: 'block'
+            }
+        };
+    };
+
+    // 1. FORZAMOS LOS FORMATOS (Idioma y 24h)
+    const formatos = {
+        timeGutterFormat: 'HH:mm', // La columna de horas de la izquierda (09:00)
+        dayFormat: 'dddd DD MMM', // Cabecera de las columnas (Jueves 09 Abr)
+        dayHeaderFormat: 'dddd DD MMMM YYYY', // El título superior
+        agendaTimeRangeFormat: ({ start, end }, culture, localizer) =>
+            `${localizer.format(start, 'HH:mm', culture)} - ${localizer.format(end, 'HH:mm', culture)}`,
+        // Ocultamos la hora dentro del bloque de la cita para dejar sitio al nombre
+        eventTimeRangeFormat: () => '', 
+    };
+
+   // 2. DISEÑAMOS EL INTERIOR DE LA CITA Y EL TOOLTIP
+    const componentes = {
+        event: ({ event }) => {
+            const horaInicio = moment(event.start).format('HH:mm');
+            const horaFin = moment(event.end).format('HH:mm'); // Añadimos también el fin
+            
+            // 🧠 Extraemos los nombres de los servicios
+            // OJO: Asegúrate de que 's.nombre' coincide con la propiedad de tu CitaServicioGetDto
+            // Si en tu backend se llama de otra forma (ej: s.nombreServicio), cámbialo aquí.
+            const nombresServicios = event.citaOriginal?.servicios && event.citaOriginal.servicios.length > 0
+                ? event.citaOriginal.servicios.map(s => s.nombre_servicio).join(', ') 
+                : 'Sin servicios registrados';
+
+            // Construimos el Tooltip con saltos de línea (\n) y unos emojis para darle estilo
+            const tooltipTexto = `⏰ Horario: ${horaInicio} - ${horaFin}\n👤 Cliente: ${event.citaOriginal.nombreCliente}\n✂️ Servicios: ${nombresServicios}\n📝 Notas: ${event.citaOriginal.observaciones || 'Ninguna'}`;
+
+            return (
+                <div 
+                    className="h-full overflow-hidden text-xs leading-tight pt-0.5 px-1"
+                    title={tooltipTexto}
+                >
+                    <span className="font-bold">{horaInicio}</span> - {event.title}
+                </div>
+            );
+        }
+    };
+
     if (cargando) return <div className="p-10">Cargando calendario...</div>;
 
     return (
@@ -62,6 +116,8 @@ export default function CalendarioGrid() {
 
             <div className="bg-white p-4 rounded-lg shadow-lg" style={{ height: '75vh' }}>
                 <Calendar
+                    culture="es"
+                    eventPropGetter={estiloEventos}
                     localizer={localizer}
                     events={eventos}
                     startAccessor="start"
@@ -88,6 +144,8 @@ export default function CalendarioGrid() {
                         day: "Día",
                         showMore: total => `+ Ver más (${total})`
                     }}
+                    formats={formatos}
+                    components={componentes}
                 />
             </div>
         </div>
