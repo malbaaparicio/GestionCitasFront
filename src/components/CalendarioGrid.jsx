@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment/min/moment-with-locales'; 
+import ModalNuevaCita from './ModalNuevaCita'; 
 moment.locale('es', {
   week: { dow: 1 } // Lunes como primer día
 });
@@ -14,6 +15,12 @@ export default function CalendarioGrid() {
     const [eventos, setEventos] = useState([]);
     const [recursos, setRecursos] = useState([]); // <-- Aquí guardaremos las columnas (Empleados)
     const [cargando, setCargando] = useState(true);
+
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [citaAEditar, setCitaAEditar] = useState(null);
+    const [datosNuevoHueco, setDatosNuevoHueco] = useState(null); // Para pre-rellenar fecha y empleado
+    const [refreshKey, setRefreshKey] = useState(0); // Para forzar recarga del calendario  
+
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -53,7 +60,7 @@ export default function CalendarioGrid() {
         };
 
         cargarDatos();
-    }, []);
+    }, [refreshKey]);
 
     // Función para inyectar el color del empleado a la cita
     const estiloEventos = (event, start, end, isSelected) => {
@@ -97,13 +104,31 @@ export default function CalendarioGrid() {
 
             return (
                 <div 
-                    className="h-full overflow-hidden text-xs leading-tight pt-0.5 px-1"
+                    className="h-full overflow-hidden text-md leading-tight pt-0.5 px-1"
                     title={tooltipTexto}
                 >
                     <span className="font-bold">{horaInicio}</span> - {event.title}
                 </div>
             );
         }
+    };
+
+    // 1. Al hacer clic en una cita existente
+    const handleSeleccionarCita = (evento) => {
+        // Le pasamos la cita original completa al modal
+        setCitaAEditar(evento.citaOriginal);
+        setModalAbierto(true);
+    };
+
+    // 2. Al hacer clic en un hueco vacío
+    const handleSeleccionarHueco = (slotInfo) => {
+        setCitaAEditar(null);
+        // Guardamos la hora y el empleado (resourceId) donde ha hecho clic
+        setDatosNuevoHueco({
+            fechaInicio: slotInfo.start,
+            empleadoId: slotInfo.resourceId
+        });
+        setModalAbierto(true);
     };
 
     if (cargando) return <div className="p-10">Cargando calendario...</div>;
@@ -146,8 +171,22 @@ export default function CalendarioGrid() {
                     }}
                     formats={formatos}
                     components={componentes}
+                    // 👇 NUEVAS PROPIEDADES DE INTERACTIVIDAD 👇
+                    selectable={true} // Activa la posibilidad de hacer clic en huecos
+                    onSelectEvent={handleSeleccionarCita} // Clic en cita
+                    onSelectSlot={handleSeleccionarHueco} // Clic en hueco vacío
+                    step={15} // Define que cada clic selecciona bloques de 15 minutos
+                    timeslots={2} // Muestra 2 bloques por cada hora (ej: 10:00 y 10:30 visualmente)
                 />
             </div>
+            {/* MODAL DE CITAS */}
+            <ModalNuevaCita 
+                isOpen={modalAbierto} 
+                onClose={() => setModalAbierto(false)} 
+                onCitaGuardada={() => setRefreshKey(prev => prev + 1)} // Necesitarás un estado refreshKey para recargar el calendario
+                citaAEditar={citaAEditar} 
+                datosNuevoHueco={datosNuevoHueco}
+            />
         </div>
     );
 }

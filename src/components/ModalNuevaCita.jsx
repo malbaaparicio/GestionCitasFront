@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
 import Swal from 'sweetalert2';
+import moment from 'moment';
 
-export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAEditar }) {
+export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAEditar, datosNuevoHueco }) {
     // 1. Estados para los desplegables
     const [clientes, setClientes] = useState([]);
     const [empleados, setEmpleados] = useState([]);
@@ -51,7 +52,22 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 // Asumimos que tu GET /citas devuelve una lista de objetos 'servicios' dentro de la cita
                 serviciosids: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : []
             });
-        } else {
+        } 
+        else if (datosNuevoHueco) {
+            // ESCENARIO 2: MODO NUEVO DESDE CALENDARIO GRID (Clic en hueco vacío)
+            setFormData({
+                clienteid: '', // Vacío, hay que elegirlo
+                empleadoid: datosNuevoHueco.empleadoId || '', // 🎯 Autoseleccionamos el empleado
+                
+                // 🎯 Formateamos la fecha del clic al formato 'YYYY-MM-DDTHH:mm' que exige HTML
+                fecha_hora_inicio: moment(datosNuevoHueco.fechaInicio).format('YYYY-MM-DDTHH:mm'), 
+                
+                // (Si tienes otros campos en tu formData, ponlos vacíos o con valores por defecto aquí)
+                serviciosIds: [],
+                observaciones: ''
+            });
+        }
+        else {
             // MODO CREACIÓN: Limpiamos
             setFormData({
                 clienteid: '',
@@ -61,7 +77,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 serviciosids: []
             });
         }
-    }, [citaAEditar, isOpen]);
+    }, [citaAEditar, datosNuevoHueco, isOpen]);
 
     // Manejador para los servicios (añadir/quitar de la lista)
     const handleServicioChange = (servicioId) => {
