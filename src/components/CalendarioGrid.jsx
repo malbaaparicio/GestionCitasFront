@@ -21,34 +21,52 @@ export default function CalendarioGrid() {
     const [datosNuevoHueco, setDatosNuevoHueco] = useState(null); // Para pre-rellenar fecha y empleado
     const [refreshKey, setRefreshKey] = useState(0); // Para forzar recarga del calendario  
 
+    // 👇 NUEVOS ESTADOS DE NAVEGACIÓN 👇
+    const [fechaActual, setFechaActual] = useState(new Date()); // Empezamos en "Hoy"
+    const [vistaActual, setVistaActual] = useState('day');      // Empezamos en vista "Día"
 
-    useEffect(() => {
+   useEffect(() => {
         const cargarDatos = async () => {
             try {
                 // 1. Cargamos Empleados (Solo los activos)
                 const resEmpleados = await api.get('/empleados');
                 const empleadosActivos = resEmpleados.data.filter(emp => (emp.estado || 'Activo') === 'Activo');
                 
-                // Mapeamos al formato estricto que pide el calendario para las columnas
                 const recursosMapeados = empleadosActivos.map(emp => ({
-                    id: emp.empleadoid,       // ID del recurso
-                    title: emp.nombre         // Nombre de la columna
+                    id: emp.empleadoid,
+                    title: emp.nombre
                 }));
                 setRecursos(recursosMapeados);
 
-                // 2. Cargamos Citas 
-                // Nota: Tu API por defecto devuelve las de "Hoy", ideal para esta vista
-                const resCitas = await api.get('/citas');
+                // 2. 🧠 CALCULAMOS EL RANGO DE FECHAS SEGÚN LA VISTA
+                let fechaDesde, fechaHasta;
+
+                if (vistaActual === 'day') {
+                    // Si es un día, pedimos solo ese día
+                    fechaDesde = moment(fechaActual).format('YYYY-MM-DD');
+                    fechaHasta = moment(fechaActual).format('YYYY-MM-DD');
+                } else if (vistaActual === 'week') {
+                    // Si es semana, calculamos el inicio y fin de esa semana
+                    fechaDesde = moment(fechaActual).startOf('week').format('YYYY-MM-DD');
+                    fechaHasta = moment(fechaActual).endOf('week').format('YYYY-MM-DD');
+                } else if (vistaActual === 'month') {
+                    // Si es mes, pedimos el mes (y le restamos/sumamos 7 días para cubrir los huecos grises del calendario)
+                    fechaDesde = moment(fechaActual).startOf('month').subtract(7, 'days').format('YYYY-MM-DD');
+                    fechaHasta = moment(fechaActual).endOf('month').add(7, 'days').format('YYYY-MM-DD');
+                }
+
+                // 3. Cargamos Citas enviando los parámetros por Query String
+                // Ejemplo de URL generada: /citas?fecha_desde=2026-04-10&fecha_hasta=2026-04-10
+                const resCitas = await api.get(`/citas?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`);
                 
-                // Mapeamos las citas al formato estricto de react-big-calendar
                 const eventosMapeados = resCitas.data.map(cita => ({
                     id: cita.citaid,
-                    title: `${cita.nombreCliente} - ${cita.estado}`, // Lo que se lee en el bloque
-                    start: new Date(cita.fecha_hora_inicio), // IMPRESCINDIBLE: Convertir string a Objeto Date
+                    title: `${cita.nombreCliente} - ${cita.estado}`,
+                    start: new Date(cita.fecha_hora_inicio),
                     end: new Date(cita.fecha_hora_fin),
-                    resourceId: cita.empleadoid, // ⬅️ LA CLAVE MÁGICA: Esto le dice en qué columna pintarlo
-                    color: cita.color_agenda_empleado, // Lo guardamos para pintar luego
-                    citaOriginal: cita // Guardamos la cita original por si queremos usar más datos en el futuro
+                    resourceId: cita.empleadoid, 
+                    color: cita.color_agenda_empleado,
+                    citaOriginal: cita 
                 }));
                 setEventos(eventosMapeados);
 
@@ -60,7 +78,22 @@ export default function CalendarioGrid() {
         };
 
         cargarDatos();
-    }, [refreshKey]);
+        
+    // 👇 MUY IMPORTANTE: Añadimos fechaActual y vistaActual a las dependencias
+    // Así, cada vez que navegues, el useEffect se dispara y pide los nuevos datos a la API
+    }, [refreshKey, fechaActual, vistaActual]);
+    
+    // Se ejecuta al pulsar Hoy, Ant, Sig
+    const handleNavegacion = (nuevaFecha) => {
+        setFechaActual(nuevaFecha);
+        // 💡 Nota para el futuro: Aquí podrías hacer una llamada a la API
+        // para traer solo las c    itas de este nuevo mes y no sobrecargar la BBDD.
+    };
+
+    // Se ejecuta al pulsar Día, Semana, Mes
+    const handleCambioVista = (nuevaVista) => {
+        setVistaActual(nuevaVista);
+    };
 
     // Función para inyectar el color del empleado a la cita
     const estiloEventos = (event, start, end, isSelected) => {
@@ -104,7 +137,7 @@ export default function CalendarioGrid() {
 
             return (
                 <div 
-                    className="h-full overflow-hidden text-md leading-tight pt-0.5 px-1"
+                    className="h-full overflow-hidden text-sm leading-tight pt-0.5 px-1"
                     title={tooltipTexto}
                 >
                     <span className="font-bold">{horaInicio}</span> - {event.title}
@@ -136,7 +169,7 @@ export default function CalendarioGrid() {
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Calendario Diario (Columnas)</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Calendario</h1>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-lg" style={{ height: '75vh' }}>
@@ -153,12 +186,15 @@ export default function CalendarioGrid() {
                     resourceIdAccessor="id"
                     resourceTitleAccessor="title"
                     
-                    // Forzamos a que empiece en la vista de Día
-                    defaultView="day"
-                    views={['day', 'week', 'month']} 
-                    
-                    min={moment().set({ hour: 9, minute: 0 }).toDate()} // Abre a las 09:00
-                    max={moment().set({ hour: 21, minute: 0 }).toDate()} // Cierra a las 21:00
+                    // 👇 ELIMINAMOS defaultView="day" Y AÑADIMOS ESTO 👇
+                    date={fechaActual}
+                    onNavigate={handleNavegacion}
+                    view={vistaActual}
+                    onView={handleCambioVista}
+
+                    views={['day', 'week', 'month']}                     
+                    min={moment(fechaActual).set({ hour: 9, minute: 0 }).toDate()} // Abre a las 09:00
+                    max={moment(fechaActual).set({ hour: 21, minute: 0 }).toDate()} // Cierra a las 21:00
                     
                     messages={{
                         next: "Sig",
