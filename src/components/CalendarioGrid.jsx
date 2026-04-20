@@ -140,7 +140,9 @@ export default function CalendarioGrid() {
                     className="h-full overflow-hidden text-sm leading-tight pt-0.5 px-1"
                     title={tooltipTexto}
                 >
-                    <span className="font-bold">{horaInicio}</span> - {event.title}
+                    
+                    <span className="font-bold">{horaInicio} - {event.title}</span> 
+                    
                 </div>
             );
         }
@@ -181,11 +183,15 @@ export default function CalendarioGrid() {
                     startAccessor="start"
                     endAccessor="end"
                     
-                    // --- CONFIGURACIÓN DE RECURSOS (COLUMNAS) ---
-                    resources={recursos}
-                    resourceIdAccessor="id"
-                    resourceTitleAccessor="title"
-                    
+                    // --- CONFIGURACIÓN DE RECURSOS SOLO PARA LA VISTA DAY(COLUMNAS) ---
+                    {
+                        // Solo mostramos recursos (empleados) en vista "Día"
+                        // En Semana y Mes, el calendario se organiza por fechas, no por empleados
+                        // Así evitamos confusiones y sobrecarga visual en vistas con muchas citas
+                        // Si quieres mostrar recursos en Semana/Mes, tendrías que rediseñar la estructura de datos y la UI para soportarlo (ej: usar un calendario tipo "agenda" o "timeline")
+                            ...(vistaActual === 'day' ? { resources: recursos, resourceIdAccessor: 'id', resourceTitleAccessor: 'title' } : {})
+                    }
+                   
                     // 👇 ELIMINAMOS defaultView="day" Y AÑADIMOS ESTO 👇
                     date={fechaActual}
                     onNavigate={handleNavegacion}
