@@ -61,7 +61,7 @@ export default function CalendarioGrid() {
                 
                 const eventosMapeados = resCitas.data.map(cita => ({
                     id: cita.citaid,
-                    title: `${cita.nombreCliente} - ${cita.estado}`,
+                    title: `${cita.nombreCliente}`,
                     start: new Date(cita.fecha_hora_inicio),
                     end: new Date(cita.fecha_hora_fin),
                     resourceId: cita.empleadoid, 
@@ -135,15 +135,25 @@ export default function CalendarioGrid() {
             // Construimos el Tooltip con saltos de línea (\n) y unos emojis para darle estilo
             const tooltipTexto = `⏰ Horario: ${horaInicio} - ${horaFin}\n👤 Cliente: ${event.citaOriginal.nombreCliente}\n✂️ Servicios: ${nombresServicios}\n📝 Notas: ${event.citaOriginal.observaciones || 'Ninguna'}`;
 
-            return (
+            return (              
+
                 <div 
-                    className="h-full overflow-hidden text-sm leading-tight pt-0.5 px-1"
+                    // Flexbox, texto muy pequeño y padding mínimo para exprimir el espacio
+                    className="h-full w-full overflow-hidden text-[11px] leading-none flex items-center px-1"
                     title={tooltipTexto}
                 >
-                    
-                    <span className="font-bold">{horaInicio} - {event.title}</span> 
-                    
+                    {/* El truncate hace que si no cabe, ponga "..." al final en lugar de saltar de línea */}
+                    <div className="truncate w-full">
+                        <span className="font-bold mr-1">{horaInicio}</span>
+                        <span>{event.title}</span>
+                        {vistaActual !== 'day' && (
+                            <span className="ml-1 opacity-80 text-[10px]">
+                                [{event.citaOriginal.nombreEmpleado?.substring(0,3)}]
+                            </span>
+                        )}
+                    </div>
                 </div>
+                
             );
         }
     };
@@ -152,6 +162,12 @@ export default function CalendarioGrid() {
     const handleSeleccionarCita = (evento) => {
         // Le pasamos la cita original completa al modal
         setCitaAEditar(evento.citaOriginal);
+        setModalAbierto(true);
+    };
+
+     // --- MANEJADORES DEL MODAL ---
+    const abrirModalCrear = () => {
+        setCitaAEditar(null); // Limpiamos para que sea una cita nueva
         setModalAbierto(true);
     };
 
@@ -172,6 +188,15 @@ export default function CalendarioGrid() {
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Calendario</h1>
+                <span>
+                    {/* BOTÓN NUEVA CITA */}
+                <button 
+                    onClick={abrirModalCrear} // Usamos la función nueva
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
+                >
+                    <span>+</span> Nueva Cita
+                </button>
+                </span>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-lg" style={{ height: '75vh' }}>
