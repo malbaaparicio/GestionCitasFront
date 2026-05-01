@@ -14,9 +14,9 @@ export default function Layout() {
           <Link to="/" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
             👥 Clientes
           </Link>
-          <Link to="/agenda" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
+          {/*<Link to="/agenda" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
             📅 Agenda
-          </Link>
+          </Link>*/}
           <Link to="/empleados" className="block py-2.5 px-4 rounded hover:bg-slate-700 transition">
             💇‍♂️ Empleados
           </Link>
