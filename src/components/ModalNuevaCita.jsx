@@ -14,7 +14,8 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
         clienteid: '',
         empleadoid: '',
         fecha_hora_inicio: '',
-        observaciones: '',
+        observaciones: '',  
+        estado: '', // Nuevo campo para el estado de la cita      
         serviciosids: [] // Lista para multiselección
     });
 
@@ -49,6 +50,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 // Truco: La fecha viene en formato ISO, el input necesita YYYY-MM-DDTHH:mm
                 fecha_hora_inicio: citaAEditar.fecha_hora_inicio ? citaAEditar.fecha_hora_inicio.substring(0, 16) : '',
                 observaciones: citaAEditar.observaciones || '',
+                estado: citaAEditar.estado || '', // Por si quieres mostrarlo o editarlo también
                 // Asumimos que tu GET /citas devuelve una lista de objetos 'servicios' dentro de la cita
                 serviciosids: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : []
             });
@@ -74,6 +76,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 empleadoid: '',
                 fecha_hora_inicio: '',
                 observaciones: '',
+                estado: '',
                 serviciosids: []
             });
         }
@@ -224,6 +227,22 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                             onChange={(e) => setFormData({...formData, fecha_hora_inicio: e.target.value})}
                         />
                     </div>
+                    {/* ESTADO (Solo si quieres mostrarlo o editarlo) */}
+                    {citaAEditar && (
+                    <div className="flex flex-col">
+                        <label className="text-sm font-semibold mb-1">Estado</label>
+                        <select 
+                            className="border rounded p-2"
+                            value={formData.estado}
+                            onChange={(e) => setFormData({...formData, estado: e.target.value})}
+                        >                            
+                            <option value="Confirmada">Confirmada</option>
+                            <option value="Completada">Completada</option>
+                            <option value="No presentado">No presentado</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    )}
                 </div>
 
                 {/* SERVICIOS (Checkboxes) */}

@@ -133,7 +133,7 @@ export default function CalendarioGrid() {
                 : 'Sin servicios registrados';
 
             // Construimos el Tooltip con saltos de línea (\n) y unos emojis para darle estilo
-            const tooltipTexto = `⏰ Horario: ${horaInicio} - ${horaFin}\n👤 Cliente: ${event.citaOriginal.nombreCliente}\n✂️ Servicios: ${nombresServicios}\n📝 Notas: ${event.citaOriginal.observaciones || 'Ninguna'}`;
+            const tooltipTexto = `⏰ Horario: ${horaInicio} - ${horaFin}\n👤 Cliente: ${event.citaOriginal.nombreCliente}\n✂️ Servicios: ${nombresServicios}\n📊 Estado: ${event.citaOriginal.estado || ''}\n📝 Notas: ${event.citaOriginal.observaciones || 'Ninguna'}`;
 
             return (              
 
