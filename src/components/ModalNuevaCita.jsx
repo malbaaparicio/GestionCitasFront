@@ -16,7 +16,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
         fecha_hora_inicio: '',
         observaciones: '',  
         estado: '', // Nuevo campo para el estado de la cita      
-        serviciosids: [] // Lista para multiselección
+        serviciosIds: [] // Lista para multiselección
     });
 
     // Cargar datos cuando el modal se abre
@@ -52,7 +52,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 observaciones: citaAEditar.observaciones || '',
                 estado: citaAEditar.estado || '', // Por si quieres mostrarlo o editarlo también
                 // Asumimos que tu GET /citas devuelve una lista de objetos 'servicios' dentro de la cita
-                serviciosids: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : []
+                serviciosIds: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : []
             });
         } 
         else if (datosNuevoHueco) {
@@ -77,7 +77,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 fecha_hora_inicio: '',
                 observaciones: '',
                 estado: '',
-                serviciosids: []
+                serviciosIds: []
             });
         }
     }, [citaAEditar, datosNuevoHueco, isOpen]);
@@ -85,12 +85,12 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
     // Manejador para los servicios (añadir/quitar de la lista)
     const handleServicioChange = (servicioId) => {
         setFormData(prev => {
-            const existe = prev.serviciosids.includes(servicioId);
+            const existe = prev.serviciosIds.includes(servicioId);
             return {
                 ...prev,
-                serviciosids: existe 
-                    ? prev.serviciosids.filter(id => id !== servicioId) // Quitar
-                    : [...prev.serviciosids, servicioId] // Añadir
+                serviciosIds: existe 
+                    ? prev.serviciosIds.filter(id => id !== servicioId) // Quitar
+                    : [...prev.serviciosIds, servicioId] // Añadir
             };
         });
     };
@@ -253,7 +253,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                             <label key={s.servicioid} className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 rounded">
                                 <input 
                                     type="checkbox"
-                                    checked={formData.serviciosids?.includes(s.servicioid) || false}
+                                    checked={formData.serviciosIds?.includes(s.servicioid) || false}
                                     onChange={() => handleServicioChange(s.servicioid)}
                                 />
                                 <span className="text-sm">{s.nombre} ({s.precio_actual}€)</span>
