@@ -21,6 +21,8 @@ export default function CalendarioGrid() {
     const [datosNuevoHueco, setDatosNuevoHueco] = useState(null); // Para pre-rellenar fecha y empleado
     const [refreshKey, setRefreshKey] = useState(0); // Para forzar recarga del calendario  
 
+    const [mostrarCanceladas, setMostrarCanceladas] = useState(false);
+
     // 👇 NUEVOS ESTADOS DE NAVEGACIÓN 👇
     const [fechaActual, setFechaActual] = useState(new Date()); // Empezamos en "Hoy"
     const [vistaActual, setVistaActual] = useState('day');      // Empezamos en vista "Día"
@@ -182,12 +184,43 @@ export default function CalendarioGrid() {
         setModalAbierto(true);
     };
 
+    // Filtramos los eventos antes de pasárselos al calendario
+    const eventosVisibles = eventos.filter(evento => {
+        // Aseguramos leer el estado, si no tiene, asumimos 'Confirmada'
+        const estadoCita = evento.citaOriginal?.estado || 'Confirmada';
+        
+        // Si el interruptor está activado, mostramos todas
+        if (mostrarCanceladas) return true;
+        
+        // Si está desactivado, mostramos todas EXCEPTO las Canceladas
+        return estadoCita !== 'Cancelada';
+    });
+
     if (cargando) return <div className="p-10">Cargando calendario...</div>;
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Calendario</h1>
+                {/* Toggle Switch para mostrar/ocultar Canceladas */}
+                <label className="flex items-center cursor-pointer">
+                    <span className="mr-3 text-sm font-semibold text-gray-700">
+                        {mostrarCanceladas ? "Mostrando Canceladas" : "Ocultando Canceladas"}
+                    </span>
+                    <div className="relative">
+                        <input 
+                            type="checkbox" 
+                            className="sr-only" 
+                            checked={mostrarCanceladas}
+                            onChange={(e) => setMostrarCanceladas(e.target.checked)}
+                        />
+                        {/* Fondo del interruptor (Gris apagado, Rojo encendido) */}
+                        <div className={`block w-14 h-8 rounded-full transition-colors ${mostrarCanceladas ? 'bg-red-400' : 'bg-gray-300'}`}></div>
+                        {/* Círculo blanco que se mueve */}
+                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform ${mostrarCanceladas ? 'translate-x-6' : ''}`}></div>
+                    </div>
+                </label>
+
                 <span>
                     {/* BOTÓN NUEVA CITA */}
                 <button 
@@ -204,7 +237,7 @@ export default function CalendarioGrid() {
                     culture="es"
                     eventPropGetter={estiloEventos}
                     localizer={localizer}
-                    events={eventos}
+                    events={eventosVisibles}
                     startAccessor="start"
                     endAccessor="end"
                     
