@@ -146,7 +146,7 @@ export default function ModalEmpleados ({isOpen, onClose, onGuardado, empleadoAE
              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
                 <h2 className="text-xl font-bold">
-                        {empleadoAEditar ? `Editar Empleado #${empleadoAEditar.empleadoid}` : "Nuevo Empleado"}
+                        {empleadoAEditar ? "Editar Empleado" : "Nuevo Empleado"}
                     </h2>
                     <button onClick={onClose} className="text-gray-500 font-bold text-xl">&times;</button>
 
