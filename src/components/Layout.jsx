@@ -1,4 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
+import keycloak from '../keycloak';
 
 export default function Layout() {
   return (
@@ -29,7 +30,7 @@ export default function Layout() {
         </nav>
 
         <div className="p-4 border-t border-slate-700">
-          <button className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded transition text-sm">
+          <button onClick={() => keycloak.logout()} className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 rounded transition text-sm">
             Cerrar Sesión
           </button>
         </div>
