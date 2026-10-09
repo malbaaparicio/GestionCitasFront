@@ -10,6 +10,7 @@ import {
 } from 'date-fns';
 import { es } from 'date-fns/locale'; 
 import ModalNuevaCita from '../components/ModalNuevaCita';
+import BuscadorHuecos from '../components/BuscadorHuecos';
 
 export default function Agenda() {
     const [citas, setCitas] = useState([]);
@@ -118,6 +119,8 @@ export default function Agenda() {
                     </span>
                     <button onClick={() => navegar('next')} className="p-2 hover:bg-gray-100 rounded-full">▶</button>
                 </div>
+                <BuscadorHuecos />
+            
 
                 {/* BOTÓN NUEVA CITA */}
                 <button 

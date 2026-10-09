@@ -177,7 +177,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-gray-900/50 flex justify-center items-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
                 <h2 className="text-xl font-bold">
                         {citaAEditar ? "Editar Cita" : "Nueva Cita"}

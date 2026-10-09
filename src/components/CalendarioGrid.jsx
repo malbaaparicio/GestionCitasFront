@@ -7,6 +7,7 @@ moment.locale('es', {
 });
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import api from '../api/axiosConfig'; // Importamos tu API
+import BuscadorHuecos from './BuscadorHuecos';
 
 moment.locale('es', { week: { dow: 1 } });
 const localizer = momentLocalizer(moment);
@@ -17,6 +18,7 @@ export default function CalendarioGrid() {
     const [cargando, setCargando] = useState(true);
 
     const [modalAbierto, setModalAbierto] = useState(false);
+    const [mostrarModalBuscador, setMostrarModalBuscador] = useState(false);
     const [citaAEditar, setCitaAEditar] = useState(null);
     const [datosNuevoHueco, setDatosNuevoHueco] = useState(null); // Para pre-rellenar fecha y empleado
     const [refreshKey, setRefreshKey] = useState(0); // Para forzar recarga del calendario  
@@ -220,16 +222,22 @@ export default function CalendarioGrid() {
                         <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform ${mostrarCanceladas ? 'translate-x-6' : ''}`}></div>
                     </div>
                 </label>
-
-                <span>
-                    {/* BOTÓN NUEVA CITA */}
-                <button 
-                    onClick={abrirModalCrear} // Usamos la función nueva
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
-                >
-                    <span>+</span> Nueva Cita
-                </button>
-                </span>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => setMostrarModalBuscador(true)}
+                        className="bg-green-600 text-white font-semibold py-2 px-4 rounded hover:bg-green-700 transition-colors"
+                    >
+                        🔍 Buscador Huecos
+                    </button>
+                    
+                        {/* BOTÓN NUEVA CITA */}
+                    <button 
+                        onClick={abrirModalCrear} // Usamos la función nueva
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow flex items-center gap-2"
+                    >
+                        + Nueva Cita
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-lg" style={{ height: '75vh' }}>
@@ -287,6 +295,29 @@ export default function CalendarioGrid() {
                 citaAEditar={citaAEditar} 
                 datosNuevoHueco={datosNuevoHueco}
             />
+            {/* --- MODAL DEL BUSCADOR --- */}
+            {mostrarModalBuscador && (
+                <div className="fixed inset-0 bg-gray-900/50 flex justify-center items-center z-50 p-4">
+                    {/* Contenedor del Modal */}
+                    <div className="bg-white rounded-lg shadow-xl relative max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                        
+                        {/* Botón de la X para cerrar */}
+                        <button 
+                            onClick={() => setMostrarModalBuscador(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-red-600 font-bold text-2xl px-2 z-10"
+                            title="Cerrar buscador"
+                        >
+                            &times;
+                        </button>
+                        
+                        {/* El componente que creamos en el paso anterior */}
+                        <div className="p-2">
+                            <BuscadorHuecos />
+                        </div>
+                        
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
