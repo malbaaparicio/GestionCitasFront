@@ -94,6 +94,18 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
             };
         });
     };
+    const handleCancelar = () => {
+        onClose();
+        setFormData({
+            clienteid: '',
+            empleadoid: '',
+            fecha_hora_inicio: '',
+            observaciones: '',
+            estado: '',
+            serviciosIds: []
+        });
+        
+    }
    // GUARDAR (CREAR O EDITAR)
     const handleGuardar = async () => {
         if (!formData.clienteid || !formData.empleadoid || !formData.fecha_hora_inicio) {
@@ -288,7 +300,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                     </div>
                     
                     <div className="flex gap-3">
-                        <button onClick={onClose} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>
+                        <button onClick={handleCancelar} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>
                         <button 
                             onClick={handleGuardar}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"

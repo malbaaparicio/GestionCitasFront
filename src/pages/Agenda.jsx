@@ -20,9 +20,11 @@ export default function Agenda() {
     const [modalAbierto, setModalAbierto] = useState(false);
     const [citaEditar, setCitaEditar] = useState(null); // Para saber qué cita editamos
     const [refreshKey, setRefreshKey] = useState(0);    // Contador para forzar recarga
+    const [datosNuevoHueco, setDatosNuevoHueco] = useState(null); // Para pasar datos del hueco al modal
     
     const [vista, setVista] = useState('dia'); 
     const [fechaActual, setFechaActual] = useState(new Date());
+    
 
     // 1. CÁLCULO DE FECHAS
     const obtenerRangoFechas = () => {
@@ -87,6 +89,7 @@ export default function Agenda() {
     const abrirModalCrear = () => {
         setCitaEditar(null); // Limpiamos para que sea una cita nueva
         setModalAbierto(true);
+        setDatosNuevoHueco(null); // Limpiamos cualquier dato previo de hueco
     };
 
     const abrirModalEditar = (cita) => {
@@ -177,14 +180,25 @@ export default function Agenda() {
                 )}
             </div>
 
-            {/* MODAL CONFIGURADO CORRECTAMENTE */}
-            <ModalNuevaCita 
-                isOpen={modalAbierto} 
-                onClose={() => setModalAbierto(false)} 
-                // Al guardar, sumamos 1 al refreshKey, lo que dispara el useEffect de arriba
-                onCitaGuardada={() => setRefreshKey(prev => prev + 1)}
-                citaAEditar={citaEditar} // Pasamos la cita a editar (o null si es nueva)
-            />
+           
+            {modalAbierto && (
+                <ModalNuevaCita                     
+                    isOpen={modalAbierto} 
+                    onClose={() => {
+                        setModalAbierto(false);
+                        setCitaEditar(null); 
+                        setDatosNuevoHueco(null); 
+                    }}
+                    onCitaGuardada={() =>{ 
+                        setRefreshKey(prev => prev + 1);
+                        setModalAbierto(false);
+                        setCitaEditar(null); 
+                        setDatosNuevoHueco(null); 
+                    }}
+                    citaAEditar={citaEditar}
+                    datosNuevoHueco={datosNuevoHueco} 
+                />
+            )}
         </div>
     );
 }

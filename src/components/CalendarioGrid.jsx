@@ -173,6 +173,7 @@ export default function CalendarioGrid() {
     const abrirModalCrear = () => {
         setCitaAEditar(null); // Limpiamos para que sea una cita nueva
         setModalAbierto(true);
+        setDatosNuevoHueco(null); // Limpiamos los datos del hueco
     };
 
     // 2. Al hacer clic en un hueco vacío
