@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api/axiosConfig'; // Importamos tu API
 
 export default function BuscadorHuecos() {
@@ -6,11 +6,27 @@ export default function BuscadorHuecos() {
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]); // Fecha de hoy por defecto
     const [duracion, setDuracion] = useState(45); // 45 min por defecto
     const [empleadoId, setEmpleadoId] = useState('');
+
+    // --- NUEVO: Estado para guardar la lista de empleados ---
+    const [empleados, setEmpleados] = useState([]);
     
     // 2. Estados para los resultados y la interfaz
     const [huecos, setHuecos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [horaSeleccionada, setHoraSeleccionada] = useState(null);
+
+    // --- NUEVO: Cargar los empleados al montar el componente ---
+    useEffect(() => {
+        const cargarEmpleados = async () => {
+            try {
+                const response = await api.get('/empleados');
+                setEmpleados(response.data);
+            } catch (error) {
+                console.error("Error cargando empleados para el buscador", error);
+            }
+        };
+        cargarEmpleados();
+    }, []);
 
     // 3. Función que llama al backend
     const buscarHuecos = async () => {
@@ -64,15 +80,21 @@ export default function BuscadorHuecos() {
                     />
                 </div>
 
+                {/* --- NUEVO: Selector de Empleados --- */}
                 <div>
                     <label className="block text-sm font-medium mb-1">Empleado (Opcional)</label>
-                    <input 
-                        type="number" 
-                        placeholder="ID Empleado"
-                        value={empleadoId} 
-                        onChange={(e) => setEmpleadoId(e.target.value)}
+                    <select 
                         className="w-full border p-2 rounded"
-                    />
+                        value={empleadoId}
+                        onChange={(e) => setEmpleadoId(e.target.value)}
+                    >
+                        <option value="">Cualquier empleado...</option>
+                        {empleados.map(e => (
+                            <option key={e.empleadoid} value={e.empleadoid}>
+                                {e.nombre}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
