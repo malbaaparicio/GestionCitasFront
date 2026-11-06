@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axiosConfig'; // Importamos tu API
 
-export default function BuscadorHuecos() {
+export default function BuscadorHuecos({ onConfirmarHueco }) {
     // 1. Estados para los parámetros de búsqueda
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]); // Fecha de hoy por defecto
     const [duracion, setDuracion] = useState(45); // 45 min por defecto
@@ -27,6 +27,19 @@ export default function BuscadorHuecos() {
         };
         cargarEmpleados();
     }, []);
+
+    const handleConfirmar = () => {
+        if (onConfirmarHueco) {
+            // Juntamos la fecha (YYYY-MM-DD) y la hora (HH:mm) en un string ISO válido
+            const fechaHoraCombinada = `${fecha}T${horaSeleccionada}:00`;
+            
+            // Enviamos el objeto con la estructura exacta que espera tu ModalNuevaCita
+            onConfirmarHueco({
+                fechaInicio: fechaHoraCombinada,
+                empleadoId: empleadoId ? parseInt(empleadoId) : null
+            });
+        }
+    };
 
     // 3. Función que llama al backend
     const buscarHuecos = async () => {
@@ -138,7 +151,9 @@ export default function BuscadorHuecos() {
                     <p className="text-green-800">
                         Has seleccionado las <strong>{horaSeleccionada}</strong> el día <strong>{fecha}</strong>.
                     </p>
-                    <button className="mt-2 bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
+                    <button 
+                        onClick={handleConfirmar}
+                        className="mt-2 bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
                         Confirmar Cita (Paso Siguiente)
                     </button>
                 </div>

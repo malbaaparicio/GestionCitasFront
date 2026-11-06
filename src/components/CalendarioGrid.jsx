@@ -313,7 +313,16 @@ export default function CalendarioGrid() {
                         
                         {/* El componente que creamos en el paso anterior */}
                         <div className="p-2">
-                            <BuscadorHuecos />
+                            <BuscadorHuecos 
+                                onConfirmarHueco={(datosDelBuscador) => {
+                                    setMostrarModalBuscador(false);                                     
+                                    
+                                    setCitaAEditar(null); 
+                                    
+                                    setDatosNuevoHueco(datosDelBuscador);
+                                    setModalAbierto(true);
+                                }} 
+                            />
                         </div>
                         
                     </div>
