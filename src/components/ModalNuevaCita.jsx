@@ -16,7 +16,9 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
         fecha_hora_inicio: '',
         observaciones: '',  
         estado: '', // Nuevo campo para el estado de la cita      
-        serviciosIds: [] // Lista para multiselección
+        serviciosIds: [], // Lista para multiselección
+        precio_total: 0, // Nuevo campo para el precio total
+        precio_sugerido: 0 // Nuevo campo para el precio sugerido
     });
 
     // Cargar datos cuando el modal se abre
@@ -52,7 +54,9 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                 observaciones: citaAEditar.observaciones || '',
                 estado: citaAEditar.estado || '', // Por si quieres mostrarlo o editarlo también
                 // Asumimos que tu GET /citas devuelve una lista de objetos 'servicios' dentro de la cita
-                serviciosIds: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : []
+                serviciosIds: citaAEditar.servicios ? citaAEditar.servicios.map(s => s.servicioid) : [],
+                precio_total: citaAEditar.precio_total || 0,
+                precio_sugerido: citaAEditar.precio_sugerido || 0
             });
         } 
         else if (datosNuevoHueco) {
@@ -254,6 +258,30 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                             <option value="Cancelada">Cancelada</option>
                         </select>
                     </div>
+                    )}
+                    {/* PRECIO TOTAL (Solo si quieres mostrarlo o editarlo) */}
+                    {citaAEditar && (
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-1">Precio Total</label>
+                            <input 
+                                type="number"
+                                className="border rounded p-2"
+                                value={formData.precio_total}
+                                onChange={(e) => setFormData({...formData, precio_total: parseFloat(e.target.value) || 0})}
+                            />
+                        </div>
+                    )}
+                    {/* PRECIO SUGERIDO (Solo si quieres mostrarlo o editarlo) */}
+                    {citaAEditar && (
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold mb-1">Precio Sugerido</label>
+                            <input 
+                                type="number"
+                                className="border rounded p-2"
+                                value={formData.precio_sugerido}
+                                onChange={(e) => setFormData({...formData, precio_sugerido: parseFloat(e.target.value) || 0})}
+                            />
+                        </div>
                     )}
                 </div>
 

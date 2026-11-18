@@ -165,7 +165,7 @@ export default function CalendarioGrid() {
     // 1. Al hacer clic en una cita existente
     const handleSeleccionarCita = (evento) => {
         // Le pasamos la cita original completa al modal
-        setCitaAEditar(evento.citaOriginal);
+        setCitaAEditar(evento.citaOriginal);        
         setModalAbierto(true);
     };
 
@@ -190,7 +190,7 @@ export default function CalendarioGrid() {
     // Filtramos los eventos antes de pasárselos al calendario
     const eventosVisibles = eventos.filter(evento => {
         // Aseguramos leer el estado, si no tiene, asumimos 'Confirmada'
-        const estadoCita = evento.citaOriginal?.estado || 'Confirmada';
+        const estadoCita = evento.citaOriginal?.estado || 'Confirmada';        
         
         // Si el interruptor está activado, mostramos todas
         if (mostrarCanceladas) return true;
