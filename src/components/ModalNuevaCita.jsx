@@ -280,6 +280,7 @@ export default function ModalNuevaCita({ isOpen, onClose, onCitaGuardada, citaAE
                                 className="border rounded p-2"
                                 value={formData.precio_sugerido}
                                 onChange={(e) => setFormData({...formData, precio_sugerido: parseFloat(e.target.value) || 0})}
+                                disabled
                             />
                         </div>
                     )}
