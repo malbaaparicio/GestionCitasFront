@@ -56,7 +56,7 @@ export default function Layout() {
             AgendaPro
           </span>
           <span className="text-[11px] font-medium text-zinc-400">
-            Gestión de Salón
+            Gestión de citas
           </span>
         </div>
       </div>
